@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="jquery.min.js"></script>
+    <title>NODA Case API Example</title>
+</head>
+<body>
+<div id="case-list"></div>
+
+<script>
+var renderCaselist = function(elementSelector, posts) {
+    var $elem = $(elementSelector);
+    var $list = $("ul").attr("class","case-list");
+    $elem.append($list);
+
+    posts.forEach(function(d) {
+        $listItem = "<li>" +
+        "<img src='" + d.image + "' class='image'>" + 
+        "<a href='" + d.link + "'>" +
+        "<h3>" + d.title.rendered + "</h3>" + 
+        "</a>" +
+        "<dl>" +
+        "<dt>Publisher:</dt>" +
+        "<dd class='publisher'>"+d.publishers.map(function(_d) { return _d.title.rendered; }).join(",")+"</dd>" +
+        "<dt>Status:</dt>" +
+        "<dd class='status'>"+d.case_status+"</dd>" +
+        "</dl>" +
+        "<div class='excerpt'>" + d.excerpt.rendered + "</div>"
+        "</li>";
+        $elem.append($listItem); 
+    })
+}
+
+var query = {
+    posts_per_page: 10,
+    meta_query: { 
+        relation: 'OR',
+        0: {
+            key: 'case_competition',
+            compare: 'NOT EXISTS'
+        }
+
+    }
+};
+jQuery.getJSON('http://nodabase.net/cases/?json', query, function(data, status){
+    console.log(data);
+    renderCaselist("#case-list", data.posts)
+})
+</script>
+</body>
+</html>
