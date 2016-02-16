@@ -18,7 +18,7 @@ var renderCaselist = function(elementSelector, posts) {
 
     posts.forEach(function(d) {
         $listItem = "<li>" +
-        "<img src='" + d.image + "' class='image'>" + 
+        //"<img src='" + d.image + "' class='image'>" + 
         "<a href='" + d.link + "'>" +
         "<h3>" + d.title.rendered + "</h3>" + 
         "</a>" +
@@ -35,19 +35,25 @@ var renderCaselist = function(elementSelector, posts) {
 }
 
 var query = {
-    posts_per_page: 10,
+    posts_per_page: 40,
     meta_query: { 
         relation: 'OR',
         0: {
-            key: 'case_competition',
-            compare: 'NOT EXISTS'
+            key: 'case_status',
+            compare: 'Pending review'
         }
 
     }
 };
 jQuery.getJSON('http://nodabase.net/cases/?json', query, function(data, status){
-    console.log(data);
+    console.log(data,status);
     renderCaselist("#case-list", data.posts)
+})
+.done(function() {
+    console.log("done")
+})
+.fail(function(e) {
+    console.log(e)
 })
 </script>
 </body>
