@@ -8,12 +8,25 @@
     <title>NODA Case API Example</title>
 </head>
 <body>
-<div id="case-list"></div>
+<h2>Feature</h2>
+<div id="case-list-feature"></div>
+
+<h2>Application</h2>
+<div id="case-list-application"></div>
+
+<h2>Investigative</h2>
+<div id="case-list-investigative"></div>
+
+<h2>Mobile challenge</h2>
+<div id="case-list-challenge"></div>
+
+<h2>Other</h2>
+<div id="case-list-other"></div>
 
 <script>
 var renderCaselist = function(elementSelector, posts) {
     var $elem = $(elementSelector);
-    var $list = $("ul").attr("class","case-list");
+    var $list = $("ul").attr("class","noda-case-list");
     $elem.append($list);
 
     posts.forEach(function(d) {
@@ -27,6 +40,8 @@ var renderCaselist = function(elementSelector, posts) {
         "<dd class='publisher'>"+d.publishers.map(function(_d) { return _d.title.rendered; }).join(",")+"</dd>" +
         "<dt>Status:</dt>" +
         "<dd class='status'>"+d.case_status+"</dd>" +
+        "<dt>Category:</dt>" +
+        "<dd>" + d.case_category + "</dd>" +
         "</dl>" +
         "<div class='excerpt'>" + d.excerpt.rendered + "</div>"
         "</li>";
@@ -34,27 +49,39 @@ var renderCaselist = function(elementSelector, posts) {
     })
 }
 
-var query = {
-    posts_per_page: 40,
-    meta_query: { 
-        relation: 'OR',
-        0: {
-            key: 'case_status',
-            compare: 'Pending review'
+// Returns a query object used to get filterd data from database 
+// Status can be submission|nominee|winner 
+// Category can be feature|application|investigative|challenge 
+function getQuery(status, category) {
+    var query = {
+        posts_per_page: 999,
+        meta_query: { 
+            relation: 'AND',
+            0: {
+                key: 'case_status',
+                value: status,
+                compare: '='
+            }
         }
-
+    };
+    if (category) {
+        query.meta_query[1] = {
+            key: 'case_category',
+            value: category,
+            compare: '='
+        }
     }
-};
-jQuery.getJSON('http://nodabase.net/cases/?json', query, function(data, status){
-    console.log(data,status);
-    renderCaselist("#case-list", data.posts)
+    return query;
+}
+
+
+var categories = ["feature", "application", "investigative", "challenge", "other"];
+categories.forEach(function(category) {
+    jQuery.getJSON('http://nodabase.net/cases/?json', getQuery("submission", category), function(data, status){
+        renderCaselist("#case-list-" + category, data.posts)
+    })    
 })
-.done(function() {
-    console.log("done")
-})
-.fail(function(e) {
-    console.log(e)
-})
+
 </script>
 </body>
 </html>
