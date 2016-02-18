@@ -26,7 +26,7 @@
 <script>
 var renderCaselist = function(elementSelector, posts) {
     var $elem = $(elementSelector);
-    var $list = $("ul").attr("class","noda-case-list");
+    var $list = $("<ul/>").attr("class","noda-case-list");
     $elem.append($list);
 
     posts.forEach(function(d) {
