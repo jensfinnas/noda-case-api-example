@@ -77,7 +77,7 @@ function getQuery(status, category) {
 
 var categories = ["feature", "application", "investigative", "challenge", "other"];
 categories.forEach(function(category) {
-    jQuery.getJSON('http://nodabase.net/cases/?json', getQuery("submission", category), function(data, status){
+    jQuery.getJSON('http://nodabase.net/cases/?json', getQuery("nominee", category), function(data, status){
         renderCaselist("#case-list-" + category, data.posts)
     })    
 })
