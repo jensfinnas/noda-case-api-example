@@ -17,11 +17,6 @@
 <h2>Investigative</h2>
 <div id="case-list-investigative"></div>
 
-<h2>Mobile challenge</h2>
-<div id="case-list-challenge"></div>
-
-<h2>Other</h2>
-<div id="case-list-other"></div>
 
 <script>
 var renderCaselist = function(elementSelector, posts) {
@@ -52,7 +47,7 @@ var renderCaselist = function(elementSelector, posts) {
 // Returns a query object used to get filterd data from database 
 // Status can be submission|nominee|winner 
 // Category can be feature|application|investigative|challenge 
-function getQuery(status, category) {
+function getQuery(status, category, case_competition) {
     var query = {
         posts_per_page: 999,
         meta_query: { 
@@ -61,11 +56,17 @@ function getQuery(status, category) {
                 key: 'case_status',
                 value: status,
                 compare: '='
+            },
+            1: {
+                key: 'case_competition',
+                value: case_competition,
+                compare: '='
+
             }
         }
     };
     if (category) {
-        query.meta_query[1] = {
+        query.meta_query[2] = {
             key: 'case_category',
             value: category,
             compare: '='
@@ -75,9 +76,11 @@ function getQuery(status, category) {
 }
 
 
-var categories = ["feature", "application", "investigative", "challenge", "other"];
+var categories = ["feature", "application", "investigative", "other"];
+var case_competition = "NODA Awards 2017";
+var status = "submission";
 categories.forEach(function(category) {
-    jQuery.getJSON('http://nodabase.net/cases/?json', getQuery("nominee", category), function(data, status){
+    jQuery.getJSON('http://nodabase.net/cases/?json', getQuery(status, category, case_competition), function(data, status){
         renderCaselist("#case-list-" + category, data.posts)
     })    
 })
